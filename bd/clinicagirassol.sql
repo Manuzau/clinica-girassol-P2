@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2024 at 07:05 PM
+-- Generation Time: Jul 04, 2024 at 08:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,12 +29,55 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `consulta` (
   `id` int(11) NOT NULL,
-  `pacienteId` int(11) NOT NULL,
+  `id_paciente` int(11) NOT NULL,
   `dataConsulta` date NOT NULL,
-  `horario` time NOT NULL,
-  `medicoId` int(11) NOT NULL,
-  `especialidadeId` int(11) NOT NULL
+  `horario` time DEFAULT NULL,
+  `medicoId` int(11) DEFAULT NULL,
+  `id_especialidade` int(11) DEFAULT NULL,
+  `status` enum('EM_ESPERA','ATENDIDO','CANCELADA','REMARCADA') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `consulta`
+--
+
+INSERT INTO `consulta` (`id`, `id_paciente`, `dataConsulta`, `horario`, `medicoId`, `id_especialidade`, `status`) VALUES
+(1, 5, '2024-07-03', NULL, NULL, 4, 'EM_ESPERA');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `consulta_horario`
+--
+
+CREATE TABLE `consulta_horario` (
+  `id` int(11) NOT NULL,
+  `id_consulta` int(11) NOT NULL,
+  `id_horario` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `consulta_horario`
+--
+
+INSERT INTO `consulta_horario` (`id`, `id_consulta`, `id_horario`) VALUES
+(1, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `consulta_view`
+-- (See below for the actual view)
+--
+CREATE TABLE `consulta_view` (
+`id` int(11)
+,`Data marcada` date
+,`Medico` varchar(150)
+,`Paciente` varchar(150)
+,`status` enum('EM_ESPERA','ATENDIDO','CANCELADA','REMARCADA')
+,`Especialidade` varchar(150)
+,`Hora` time
+);
 
 -- --------------------------------------------------------
 
@@ -53,10 +96,11 @@ CREATE TABLE `especialidade` (
 --
 
 INSERT INTO `especialidade` (`id`, `nome`, `descricao`) VALUES
-(1, 'primeira', 'p1'),
+(1, 'primeiraCardiologia', 'Cardiologia é a especialidade médica que se ocupa do diagnóstico e tratamento das doenças que acometem o coração'),
 (2, 'Pediatria ', 'Tratamento de Criancas'),
 (3, 'Oftamologia ', 'Tratamento dos Olhos'),
-(4, 'Ortopedria', 'Nao sei');
+(4, 'Ortopedria', 'Nao sei'),
+(5, 'Angiologia', 'Ocupa do tratamento clínico das doenças que acometem vasos sanguíneos (artérias e veias) e vasos linfáticos, como varizes, aneurismas e obstruções arteriais. Atua em conjunto com a cirurgia vascular.');
 
 -- --------------------------------------------------------
 
@@ -121,7 +165,28 @@ INSERT INTO `funcionario` (`id`, `nome`, `bi`, `telefone`, `morada`, `genero`, `
 (23, 'ffdsfds', '3434', '2434', 'erwere', 'M', '1111-11-11', 'fsfsd', 'Medico', 434243, '1111-11-11'),
 (24, 'sadsad', '4343', '34243', 'dsadad', 'F', '1111-11-11', 'dfdsf', 'Medico', 34434, '1111-11-11'),
 (25, 'gfdgdf', '324234', '43432', 'fdgdfgf3', 'M', '1111-11-11', 'dfsfd', 'Medico', 3423432, '1111-11-11'),
-(26, 'Cdsadsd', 'dfs', '343', 'dsdsd', 'F', '1111-11-11', 'dfdsf', 'Medico', 342432, '1111-11-11');
+(26, 'Cdsadsd', 'dfs', '343', 'dsdsd', 'F', '1111-11-11', 'dfdsf', 'Medico', 342432, '1111-11-11'),
+(27, 'Jose MIngas', '002392932', '992123322', 'Luanda', 'M', '1988-12-09', 'Chefe de sirurgia', 'Medico', 19203232, '2009-09-08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `horario_do_medico`
+--
+
+CREATE TABLE `horario_do_medico` (
+  `id` int(11) NOT NULL,
+  `hora` time NOT NULL DEFAULT current_timestamp(),
+  `dia` date NOT NULL DEFAULT current_timestamp(),
+  `id_medico` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `horario_do_medico`
+--
+
+INSERT INTO `horario_do_medico` (`id`, `hora`, `dia`, `id_medico`) VALUES
+(1, '10:00:52', '2024-07-03', 2);
 
 -- --------------------------------------------------------
 
@@ -158,7 +223,31 @@ CREATE TABLE `medico` (
 
 INSERT INTO `medico` (`id`, `numero_ordem`, `especialidade_id`, `funcionario_id`) VALUES
 (2, 23, 4, 14),
-(4, 34545, 4, 26);
+(4, 34545, 4, 26),
+(5, 1005, 2, 27);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `medico_view`
+-- (See below for the actual view)
+--
+CREATE TABLE `medico_view` (
+`id` int(11)
+,`Ordem_id` int(11)
+,`Especialidade` varchar(150)
+,`nome` varchar(150)
+,`bi` varchar(14)
+,`genero` enum('M','F')
+,`cargo` varchar(150)
+,`salario` double
+,`morada` text
+,`telefone` varchar(9)
+,`data_nascimento` date
+,`data_contrato` date
+,`Dia disponivel` date
+,`Hora disponivel` time
+);
 
 -- --------------------------------------------------------
 
@@ -188,6 +277,24 @@ INSERT INTO `paciente` (`id`, `Nome`, `bi`, `data_nascimento`, `endereco`, `tele
 (5, 'Antonio Dunda', 'CaUIge', '2002-10-20', '9934888JA', 934832211, 'M'),
 (6, 'Joao Lauriel', 'Viana', '2000-10-05', '02392AS3943', 92331102, 'M');
 
+-- --------------------------------------------------------
+
+--
+-- Structure for view `consulta_view`
+--
+DROP TABLE IF EXISTS `consulta_view`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `consulta_view`  AS SELECT `consulta`.`id` AS `id`, `consulta`.`dataConsulta` AS `Data marcada`, `medico_view`.`nome` AS `Medico`, `paciente`.`Nome` AS `Paciente`, `consulta`.`status` AS `status`, `medico_view`.`Especialidade` AS `Especialidade`, `medico_view`.`Hora disponivel` AS `Hora` FROM ((((`consulta` join `medico_view`) join `paciente`) join `consulta_horario`) join `horario_do_medico`) WHERE `consulta`.`id_paciente` = `paciente`.`id` AND `consulta_horario`.`id_horario` = `horario_do_medico`.`id` AND `medico_view`.`id` = `horario_do_medico`.`id_medico` ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `medico_view`
+--
+DROP TABLE IF EXISTS `medico_view`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `medico_view`  AS SELECT `medico`.`id` AS `id`, `medico`.`numero_ordem` AS `Ordem_id`, `especialidade`.`nome` AS `Especialidade`, `funcionario`.`nome` AS `nome`, `funcionario`.`bi` AS `bi`, `funcionario`.`genero` AS `genero`, `funcionario`.`cargo` AS `cargo`, `funcionario`.`salario` AS `salario`, `funcionario`.`morada` AS `morada`, `funcionario`.`telefone` AS `telefone`, `funcionario`.`data_nascimento` AS `data_nascimento`, `funcionario`.`data_contrato` AS `data_contrato`, `horario_do_medico`.`dia` AS `Dia disponivel`, `horario_do_medico`.`hora` AS `Hora disponivel` FROM (((`medico` join `especialidade`) join `funcionario`) join `horario_do_medico`) WHERE `funcionario`.`id` = `medico`.`funcionario_id` AND `medico`.`especialidade_id` = `especialidade`.`id` AND `horario_do_medico`.`id_medico` = `medico`.`id` ;
+
 --
 -- Indexes for dumped tables
 --
@@ -196,7 +303,17 @@ INSERT INTO `paciente` (`id`, `Nome`, `bi`, `data_nascimento`, `endereco`, `tele
 -- Indexes for table `consulta`
 --
 ALTER TABLE `consulta`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_paciente` (`id_paciente`),
+  ADD KEY `fk_especialidade` (`id_especialidade`);
+
+--
+-- Indexes for table `consulta_horario`
+--
+ALTER TABLE `consulta_horario`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_consulta` (`id_consulta`,`id_horario`),
+  ADD KEY `fk_horario` (`id_horario`);
 
 --
 -- Indexes for table `especialidade`
@@ -215,6 +332,14 @@ ALTER TABLE `factura`
 --
 ALTER TABLE `funcionario`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `horario_do_medico`
+--
+ALTER TABLE `horario_do_medico`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `hora` (`hora`,`dia`,`id_medico`),
+  ADD KEY `fk_medico` (`id_medico`);
 
 --
 -- Indexes for table `medicamento`
@@ -245,13 +370,19 @@ ALTER TABLE `paciente`
 -- AUTO_INCREMENT for table `consulta`
 --
 ALTER TABLE `consulta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `consulta_horario`
+--
+ALTER TABLE `consulta_horario`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `especialidade`
 --
 ALTER TABLE `especialidade`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `factura`
@@ -263,7 +394,13 @@ ALTER TABLE `factura`
 -- AUTO_INCREMENT for table `funcionario`
 --
 ALTER TABLE `funcionario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `horario_do_medico`
+--
+ALTER TABLE `horario_do_medico`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `medicamento`
@@ -275,7 +412,7 @@ ALTER TABLE `medicamento`
 -- AUTO_INCREMENT for table `medico`
 --
 ALTER TABLE `medico`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `paciente`
@@ -286,6 +423,26 @@ ALTER TABLE `paciente`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `consulta`
+--
+ALTER TABLE `consulta`
+  ADD CONSTRAINT `fk_especialidade` FOREIGN KEY (`id_especialidade`) REFERENCES `especialidade` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_paciente` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `consulta_horario`
+--
+ALTER TABLE `consulta_horario`
+  ADD CONSTRAINT `fk_consulta` FOREIGN KEY (`id_consulta`) REFERENCES `consulta` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_horario` FOREIGN KEY (`id_horario`) REFERENCES `horario_do_medico` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `horario_do_medico`
+--
+ALTER TABLE `horario_do_medico`
+  ADD CONSTRAINT `fk_medico` FOREIGN KEY (`id_medico`) REFERENCES `medico` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `medico`

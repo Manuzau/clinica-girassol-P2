@@ -219,11 +219,8 @@ public class CadastroPaciente extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new CadastroPaciente().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new CadastroPaciente().setVisible(true);
         });
     }
 

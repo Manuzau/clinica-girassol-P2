@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import models.Especialidade;
+import view.CadastroEspecialidade;
 
 public class Especialidade_panel extends javax.swing.JPanel {
 
@@ -106,7 +107,9 @@ public class Especialidade_panel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        java.awt.EventQueue.invokeLater(() -> {
+            new CadastroEspecialidade().setVisible(true);
+        });
     }//GEN-LAST:event_jButton1ActionPerformed
 
 

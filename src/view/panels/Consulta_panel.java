@@ -4,6 +4,7 @@
  */
 package view.panels;
 
+import view.CadastroConsulta;
 import view.dashboard.ConsultaForm;
 
 /**
@@ -97,7 +98,7 @@ public class Consulta_panel extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        java.awt.EventQueue.invokeLater(() -> {
-            new ConsultaForm().setVisible(true);
+            new CadastroConsulta().setVisible(true);
         });
     }//GEN-LAST:event_jButton1ActionPerformed
 

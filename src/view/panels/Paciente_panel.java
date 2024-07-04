@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import models.Paciente;
+import view.CadastroPaciente;
 
 public class Paciente_panel extends javax.swing.JPanel {
 
@@ -99,7 +100,9 @@ public class Paciente_panel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        java.awt.EventQueue.invokeLater(() -> {
+            new CadastroPaciente().setVisible(true);
+        });
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
